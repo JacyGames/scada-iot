@@ -1,14 +1,30 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const Product = require('./models/productModel');
+const MilkHumidity = require('./models/milkHumidityModel');
 const app = express();
-var cron = require('node-cron');
+const cron = require('node-cron');
+const generateMilkHumidiy = require('./data/milkHumidity');
+const generateMilkTemperature = require('./data/milkTemp');
+const generateMilkPressure = require('./data/milkPressure');
+const generateAirTemperature = require('./data/airTemp');
 
 //'0 18 * * *' every day at 18 
+//'*/10 * * * * *' every 10 seconds  
 
-// var task = cron.schedule('* * * * * *', () =>  {
-//   console.log('will execute every minute until stopped');
-// });
+const task = cron.schedule('*/10 * * * * *', async () =>  {
+    try{
+        const humidity = generateMilkHumidiy();
+        const pressure = generateMilkPressure();
+        const temp = generateMilkTemperature();
+        const airTemp = generateAirTemperature();
+        console.log(humidity, pressure, temp, airTemp);
+        //await MilkHumidity.create({value})
+    }catch(e) {
+        console.log(e);
+    }
+  
+});
 
 
 const nodemailer = require("nodemailer");
@@ -63,7 +79,7 @@ myChart
   .setBackgroundColor('transparent');
 
 // Print the chart URL
-console.log(myChart.getUrl());
+//console.log(myChart.getUrl());
 
 
 app.use(express.json())
