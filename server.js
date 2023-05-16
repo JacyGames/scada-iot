@@ -13,7 +13,7 @@ var cron = require('node-cron');
 
 const nodemailer = require("nodemailer");
 
-// async..await is not allowed in global scope, must use a wrapper
+//async..await is not allowed in global scope, must use a wrapper
 async function main() {
 
   // create reusable transporter object using the default SMTP transport
@@ -23,13 +23,13 @@ async function main() {
     secure: true, // true for 465, false for other ports
     auth: {
       user: 'secure.pass.corp@gmail.com', // generated ethereal user
-      pass: 'Str#ongpass77', // generated ethereal password
+      pass: 'jjjzbuhfgmopyefs', // generated ethereal password
     },
   });
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: '"Fred Foo 👻" <foo@example.com>', // sender address
+    from: '"secure.pass.corp@gmail.com', // sender address
     to: "bohdan.danultsiv@gmail.com", // list of receivers "bar@example.com, baz@example.com"
     subject: "Hello ✔", // Subject line
     text: "Hello world?", // plain text body
@@ -44,8 +44,26 @@ async function main() {
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
-main().catch(console.error);
+//main().catch(console.error);
 
+
+const QuickChart = require('quickchart-js');
+
+const myChart = new QuickChart();
+myChart
+  .setConfig({
+    type: 'bar',
+    data: {
+      labels: ['Hello world', 'Foo bar'],
+      datasets: [{ label: 'Foo', data: [1, 2] }],
+    },
+  })
+  .setWidth(800)
+  .setHeight(400)
+  .setBackgroundColor('transparent');
+
+// Print the chart URL
+console.log(myChart.getUrl());
 
 
 app.use(express.json())
