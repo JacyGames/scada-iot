@@ -4,33 +4,61 @@ const Product = require('./models/productModel');
 const MilkHumidity = require('./models/milkHumidityModel');
 const app = express();
 const cron = require('node-cron');
-const generateMilkHumidiy = require('./data/milkHumidity');
-const generateMilkTemperature = require('./data/milkTemp');
-const generateMilkPressure = require('./data/milkPressure');
-const generateAirTemperature = require('./data/airTemp');
+const generateUrl = require('./data/generateChartUrl')
+
 
 //'0 18 * * *' every day at 18 
 //'*/10 * * * * *' every 10 seconds  
 
-const task = cron.schedule('*/10 * * * * *', async () =>  {
-    try{
-        const humidity = generateMilkHumidiy();
-        const pressure = generateMilkPressure();
-        const temp = generateMilkTemperature();
-        const airTemp = generateAirTemperature();
-        console.log(humidity, pressure, temp, airTemp);
-        //await MilkHumidity.create({value})
-    }catch(e) {
-        console.log(e);
-    }
+// const task = cron.schedule('*/10 * * * * *', async () =>  {
+//     try{
+//         const humidity = generateMilkHumidiy();
+//         const pressure = generateMilkPressure();
+//         const temp = generateMilkTemperature();
+//         const airTemp = generateAirTemperature();
+//         console.log(humidity, pressure, temp, airTemp);
+//         //await MilkHumidity.create({value})
+//     }catch(e) {
+//         console.log(e);
+//     }
   
-});
+// });
 
+const milkHumidity = [
+    5,
+    3.46, 3.47,
+    3.48,
+    3.49,3.5,3.5,3.5,
+];
+const milkPressure = [
+   
+    139,  139.5, 139.5, 
+    139.5, 140, 140, 140.5, 
+    140.5, 140.9, 140.9, 
+];
+const milkTemperature = [
+    78.6, 78.6, 78.9, 78.9, 
+    79.5, 
+   79.8, 80, 80,80.2,
+];
+const airTemperature = [
+    178, 178.3, 178.3, 
+    178.5, 178.5, 178.9,  178.9, 178.9,  179.3, 179.3,  179.7, 179.7, 180, 180,   180.5, 180.5, 
+   181,
+];
+
+
+const humidityUrl = generateUrl('Вологість висушеного молока', milkHumidity);
+const milkPressureUrl = generateUrl('Напір молока', milkPressure);
+const milkTemperatureUrl = generateUrl('Температура молока на вході в сушарку', milkTemperature);
+const airTemperatureUrl = generateUrl('Температура повітря на вході в сушарку', airTemperature);
 
 const nodemailer = require("nodemailer");
 
 //async..await is not allowed in global scope, must use a wrapper
 async function main() {
+
+
 
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
@@ -47,9 +75,52 @@ async function main() {
   let info = await transporter.sendMail({
     from: '"secure.pass.corp@gmail.com', // sender address
     to: "bohdan.danultsiv@gmail.com", // list of receivers "bar@example.com, baz@example.com"
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
+    subject: "Щоденний звіт процесу автоматизації 17.05.2023", // Subject line
+    text: "Звіт по основним контурам регулювання за останню добу", // plain text body
+    html: `<div>
+    <tbody>
+    <tr>
+    <td>
+        <img style="width: 600px" src="${humidityUrl}"/>
+        <div>
+        <b>Максимальне динамічне відхилення: 1.5</b>
+        </div>
+        <div>
+        <b>Перерегулювуння - немає</b>
+        </div>
+    </td>
+    <td>
+        <img style="width: 600px" src="${milkPressureUrl}"/>
+        <div>
+        <b>Максимальне динамічне відхилення: 0.5</b>
+        </div>
+        <div>
+        <b>Перерегулювуння - немає</b>
+        </div>
+    </td>
+    </tr>
+    <tr>
+    <td>
+        <img style="width: 600px" src="${milkTemperatureUrl}"/>
+        <div>
+        <b>Максимальне динамічне відхилення: 2</b>
+        </div>
+        <div>
+        <b>Перерегулювуння - немає</b>
+        </div>
+    </td>
+    <td>
+        <img style="width: 600px" src="${airTemperatureUrl}"/>
+        <div>
+        <b>Максимальне динамічне відхилення: 1</b>
+        </div>
+        <div>
+        <b>Перерегулювуння - немає</b>
+        </div>
+    </td>
+    </tr>
+    </tbody>
+    </div>`, // html body
   });
 
   console.log("Message sent: %s", info.messageId);
@@ -60,26 +131,8 @@ async function main() {
   // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
 }
 
-//main().catch(console.error);
-
-
-const QuickChart = require('quickchart-js');
-
-const myChart = new QuickChart();
-myChart
-  .setConfig({
-    type: 'bar',
-    data: {
-      labels: ['Hello world', 'Foo bar'],
-      datasets: [{ label: 'Foo', data: [1, 2] }],
-    },
-  })
-  .setWidth(800)
-  .setHeight(400)
-  .setBackgroundColor('transparent');
-
-// Print the chart URL
-//console.log(myChart.getUrl());
+main().catch(console.error);
+    
 
 
 app.use(express.json())
