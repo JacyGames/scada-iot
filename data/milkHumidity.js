@@ -1,7 +1,10 @@
 const generateData = require('./dataGenerator');
 
 const milkHumidity = [
-   5
+    3.46, 3.47,
+    3.48,
+    3.49,3.5,3.5,3.5,
+    6,6
 ];
 
 

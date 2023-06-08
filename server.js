@@ -4,7 +4,8 @@ const Product = require('./models/productModel');
 const MilkHumidity = require('./models/milkHumidityModel');
 const app = express();
 const cron = require('node-cron');
-const generateUrl = require('./data/generateChartUrl')
+const generateUrl = require('./data/generateChartUrl');
+require('dotenv').config();
 
 
 //'0 18 * * *' every day at 18 
@@ -59,22 +60,21 @@ const nodemailer = require("nodemailer");
 async function main() {
 
 
-
   // create reusable transporter object using the default SMTP transport
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
-      user: 'secure.pass.corp@gmail.com', // generated ethereal user
-      pass: 'jjjzbuhfgmopyefs', // generated ethereal password
+      user: process.env.SENDER_USER, // generated ethereal user
+      pass: process.env.SENDER_PASSWORD, // generated ethereal password
     },
   });
 
   // send mail with defined transport object
   let info = await transporter.sendMail({
-    from: '"secure.pass.corp@gmail.com', // sender address
-    to: "bohdan.danultsiv@gmail.com", // list of receivers "bar@example.com, baz@example.com"
+    from: process.env.ADRES_FROM, // sender address
+    to: process.env.ADRES_TO, // list of receivers "bar@example.com, baz@example.com"
     subject: "Щоденний звіт процесу автоматизації 17.05.2023", // Subject line
     text: "Звіт по основним контурам регулювання за останню добу", // plain text body
     html: `<div>
